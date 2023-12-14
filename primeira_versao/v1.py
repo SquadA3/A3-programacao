@@ -1,26 +1,196 @@
-import database
+import sqlite3
 import datetime
-import classe_usuario, classe_evento
+
+# Conectar ao banco de dados SQLite
+conn = sqlite3.connect('eventos.db')
+cursor = conn.cursor()
+
+# Criar tabelas se não existirem
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS usuarios (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT,
+        email TEXT,
+        cpf,
+        data_nascimento DATE,
+        login TEXT,
+        senha TEXT
+    )
+''')
+
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS empresa_eventos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT,
+        email TEXT,
+        telefone INTEGER,
+        cnpj INTEGER,
+        login TEXT,
+        senha TEXT
+    )
+''')
+
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS eventos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT,
+        endereco TEXT,
+        categoria TEXT,
+        horario DATETIME,
+        descricao TEXT
+    )
+''')
+
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS usuario_eventos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id_usuario INTEGER,
+        id_evento INTEGER,
+        FOREIGN KEY (id_usuario) REFERENCES usuarios (id),
+        FOREIGN KEY (id_evento) REFERENCES eventos (id)
+    )
+''')
+
+conn.commit()
+
+class Usuario:
+    def __init__(self, nome, email, cpf, data_nascimento, login, senha):
+        self._id = None
+        self._nome = nome
+        self._email = email
+        self._cpf = cpf
+        self._data_nascimento = data_nascimento
+        self._login = login
+        self._senha = senha
+        self._eventos_participando = []
+
+    def get_id(self):
+        return self._id
+
+    def set_id(self, identificador):
+        self._id = identificador
+
+    def get_nome(self):
+        return self._nome
+
+    def set_nome(self, nome):
+        self._nome = nome
+
+    def get_email(self):
+        return self._email
+
+    def set_email(self, email):
+        self._email = email
+        
+    def get_cpf(self):
+        return self._cpf
+    
+    def set_cpf(self, cpf):
+        self._cpf = cpf
+
+    def get_data_nascimento(self):
+        return self._data_nascimento
+
+    def set_data_nascimento(self, data_nascimento):
+        self._data_nascimento = data_nascimento
+
+    def get_login(self):
+        return self._login
+
+    def set_login(self, login):
+        self._login = login
+
+    def get_senha(self):
+        return self._senha
+
+    def set_senha(self, senha):
+        self._senha = senha
+
+    def get_eventos_participando(self):
+        return self._eventos_participando
+
+    def set_eventos_participando(self, eventos_participando):
+        self._eventos_participando = eventos_participando
+        
+class Empresa(Usuario):
+    def __init__(self, nome, email, login, senha, cnpj):
+        super().__init__(nome, email, None, login, senha, cnpj)
+        self._cnpj = cnpj
+
+    def get_cnpj(self):
+        return self._cnpj
+
+    def set_cnpj(self, cnpj):
+        self._cnpj = cnpj
+
+    def menu_empresa(self):
+        pass
+
+class Evento:
+    def __init__(self, nome, endereco, categoria, horario, descricao):
+        self._id = None
+        self._nome = nome
+        self._endereco = endereco
+        self._categoria = categoria
+        self._horario = horario
+        self._descricao = descricao
+
+    def get_id(self):
+        return self._id
+
+    def set_id(self, identificador):
+        self._id = identificador
+
+    def get_nome(self):
+        return self._nome
+
+    def set_nome(self, nome):
+        self._nome = nome
+
+    def get_endereco(self):
+        return self._endereco
+
+    def set_endereco(self, endereco):
+        self._endereco = endereco
+
+    def get_categoria(self):
+        return self._categoria
+
+    def set_categoria(self, categoria):
+        self._categoria = categoria
+
+    def get_horario(self):
+        return self._horario
+
+    def set_horario(self, horario):
+        self._horario = horario
+
+    def get_descricao(self):
+        return self._descricao
+
+    def set_descricao(self, descricao):
+        self._descricao = descricao
+        
 
 def criar_usuario(nome, email, cpf, data_nascimento, login, senha):
-    database.cursor.execute('INSERT INTO usuarios (nome, email, cpf, data_nascimento, login, senha) VALUES (?, ?, ?, ?, ?, ?)', (nome, email, cpf, data_nascimento, login, senha))
-    database.conn.commit()
+    cursor.execute('INSERT INTO usuarios (nome, email, cpf, data_nascimento, login, senha) VALUES (?, ?, ?, ?, ?, ?)', (nome, email, cpf, data_nascimento, login, senha))
+    conn.commit()
     print("Usuário cadastrado com sucesso!")
     
 def criar_empresa(nome, email, telefone, cnpj, login, senha):
-    database.cursor.execute('INSERT INTO empresa_eventos (nome, email, telefone, cnpj, login, senha) VALUES (?, ?, ?, ?, ?, ?)', (nome, email, telefone, cnpj, login, senha))
-    database.conn.commit()
+    cursor.execute('INSERT INTO empresa_eventos (nome, email, telefone, cnpj, login, senha) VALUES (?, ?, ?, ?, ?, ?)', (nome, email, telefone, cnpj, login, senha))
+    conn.commit()
     print("Usuário cadastrado com sucesso!")
 
-def criar_evento(nome, endereco, categoria, horario, descricao):
-    database.cursor.execute('INSERT INTO eventos (nome, endereco, categoria, horario, descricao) VALUES (?, ?, ?, ?, ?)', (nome, endereco, categoria, horario, descricao))
-    database.conn.commit()
+def criar_evento(nome, endereco, categoria, data, horario, descricao):
+    cursor.execute('INSERT INTO eventos (nome, endereco, categoria, horario, descricao) VALUES (?, ?, ?, ?, ?)', (nome, endereco, categoria, horario, descricao))
+    conn.commit()
     print("Evento cadastrado com sucesso!")
 
 def listar_eventos():
     agora = datetime.datetime.now()
-    database.cursor.execute('SELECT * FROM eventos ORDER BY horario')
-    eventos = database.cursor.fetchall()
+    cursor.execute('SELECT * FROM eventos ORDER BY horario')
+    eventos = cursor.fetchall()
 
     if not eventos:
         print("Não há eventos disponíveis.")
@@ -41,39 +211,39 @@ def listar_eventos():
                 imprimir_evento(evento)
 
 def participar_evento(id_usuario, id_evento):
-    database.cursor.execute('SELECT * FROM usuarios WHERE id=?', (id_usuario,))
-    dados_usuario = database.cursor.fetchone()
-    database.cursor.execute('SELECT * FROM eventos WHERE id=?', (id_evento,))
-    dados_evento = database.cursor.fetchone()
+    cursor.execute('SELECT * FROM usuarios WHERE id=?', (id_usuario,))
+    dados_usuario = cursor.fetchone()
+    cursor.execute('SELECT * FROM eventos WHERE id=?', (id_evento,))
+    dados_evento = cursor.fetchone()
     
     if dados_usuario and dados_evento:
-        usuario = classe_usuario.Usuario(dados_usuario[1], dados_usuario[2], dados_usuario[3], dados_usuario[4], dados_usuario[5])
+        usuario = Usuario(dados_usuario[1], dados_usuario[2], dados_usuario[3], dados_usuario[4], dados_usuario[5])
         usuario.set_id(dados_usuario[0])
-        evento = classe_evento.Evento(dados_evento[1], dados_evento[2], dados_evento[3], dados_evento[4], dados_evento[5])
+        evento = Evento(dados_evento[1], dados_evento[2], dados_evento[3], dados_evento[4], dados_evento[5])
         evento.set_id(dados_evento[0])
 
-        eventos_participando = [classe_evento.Evento(*linha) for linha in database.cursor.execute('SELECT * FROM usuario_eventos WHERE id_usuario=?', (id_usuario,)).fetchall()]
+        eventos_participando = [Evento(*linha) for linha in cursor.execute('SELECT * FROM usuario_eventos WHERE id_usuario=?', (id_usuario,)).fetchall()]
 
         usuario.set_eventos_participando(eventos_participando)
         usuario.get_eventos_participando().append(evento)
-        database.cursor.execute('INSERT INTO usuario_eventos (id_usuario, id_evento) VALUES (?, ?)', (id_usuario, id_evento))
-        database.conn.commit()
+        cursor.execute('INSERT INTO usuario_eventos (id_usuario, id_evento) VALUES (?, ?)', (id_usuario, id_evento))
+        conn.commit()
         print("Você está participando deste evento.")
     else:
-        print("Evento não encontrado.")
+        print("Usuário ou evento não encontrado.")
 
 def cancelar_participacao(id_usuario, id_evento):
-    database.cursor.execute('DELETE FROM usuario_eventos WHERE id_usuario=? AND id_evento=?', (id_usuario, id_evento))
-    database.conn.commit()
+    cursor.execute('DELETE FROM usuario_eventos WHERE id_usuario=? AND id_evento=?', (id_usuario, id_evento))
+    conn.commit()
     print("Participação cancelada com sucesso.")
 
 def autenticar_usuario(login, senha):
-    database.cursor.execute('SELECT id, nome, email, cpf, data_nascimento FROM usuarios WHERE login=? AND senha=?', (login, senha))
-    return database.cursor.fetchone()
+    cursor.execute('SELECT id, nome, email, cpf, data_nascimento FROM usuarios WHERE login=? AND senha=?', (login, senha))
+    return cursor.fetchone()
 
 def autenticar_empresa(login, senha):
-    database.cursor.execute('SELECT * FROM empresa_eventos WHERE login=? AND senha=?', (login, senha))
-    return database.cursor.fetchone()
+    cursor.execute('SELECT * FROM empresa_eventos WHERE login=? AND senha=?', (login, senha))
+    return cursor.fetchone()
 
 def imprimir_evento(evento):
     print(f"ID: {evento[0]}")
@@ -198,3 +368,6 @@ def main():
              break
         else:
             print("Opção inválida. Tente novamente.")
+
+if __name__ == "__main__":
+    main()

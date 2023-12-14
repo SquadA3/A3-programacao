@@ -1,13 +1,10 @@
-class Usuario:
-    def __init__(self, nome, email, cpf, data_nascimento, login, senha):
+class Usuarios:
+    def __init__(self, nome, email, login, senha):
         self._id = None
         self._nome = nome
         self._email = email
-        self._cpf = cpf
-        self._data_nascimento = data_nascimento
         self._login = login
         self._senha = senha
-        self._eventos_participando = []
 
     def get_id(self):
         return self._id
@@ -27,17 +24,6 @@ class Usuario:
     def set_email(self, email):
         self._email = email
         
-    def get_cpf(self):
-        return self._cpf
-    
-    def set_cpf(self, cpf):
-        self._cpf = cpf
-
-    def get_data_nascimento(self):
-        return self._data_nascimento
-
-    def set_data_nascimento(self, data_nascimento):
-        self._data_nascimento = data_nascimento
 
     def get_login(self):
         return self._login
@@ -51,8 +37,4 @@ class Usuario:
     def set_senha(self, senha):
         self._senha = senha
 
-    def get_eventos_participando(self):
-        return self._eventos_participando
-
-    def set_eventos_participando(self, eventos_participando):
-        self._eventos_participando = eventos_participando
+    

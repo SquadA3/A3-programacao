@@ -7,7 +7,7 @@ cursor = conn.cursor()
 
 # Criar tabelas se não existirem
 cursor.execute('''
-    CREATE TABLE IF NOT EXISTS usuarios (
+    CREATE TABLE IF NOT EXISTS usuario_simples (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nome TEXT,
         email TEXT,
@@ -19,7 +19,7 @@ cursor.execute('''
 ''')
 
 cursor.execute('''
-    CREATE TABLE IF NOT EXISTS empresa_eventos (
+    CREATE TABLE IF NOT EXISTS usuario_empresa (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nome TEXT,
         email TEXT,
@@ -33,11 +33,13 @@ cursor.execute('''
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS eventos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id_empresa INTEGER,
         nome TEXT,
         endereco TEXT,
         categoria TEXT,
         horario DATETIME,
-        descricao TEXT
+        descricao TEXT,
+        FOREIGN KEY (id_empresa) REFERENCES usuario_empresa (id)
     )
 ''')
 
@@ -46,7 +48,7 @@ cursor.execute('''
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         id_usuario INTEGER,
         id_evento INTEGER,
-        FOREIGN KEY (id_usuario) REFERENCES usuarios (id),
+        FOREIGN KEY (id_usuario) REFERENCES usuarios_simples (id),
         FOREIGN KEY (id_evento) REFERENCES eventos (id)
     )
 ''')
