@@ -34,7 +34,7 @@ def criar_usuario_simples(nome, email, cpf, data_nascimento, login, senha):
         print(f"Erro: {e}")
 
     input('Pressione Enter para continuar...')
-    limpar_tela()  # Certifique-se de ter a função limpar_tela() implementada conforme necessário
+    limpar_tela()  
     
 def criar_empresa(nome, email, telefone, cnpj, login, senha):
     database.cursor.execute('INSERT INTO usuario_empresa (nome, email, telefone, cnpj, login, senha) VALUES (?, ?, ?, ?, ?, ?)', (nome, email, telefone, cnpj, login, senha))

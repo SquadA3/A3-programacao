@@ -77,7 +77,7 @@ def listar_eventos_empresa(id_empresa):
     database.cursor.execute(consulta, (id_empresa,))
     eventos_criados_pela_empresa = database.cursor.fetchall()
 
-    # Separar eventos ocorridos e não ocorridos
+    
     eventos_nao_ocorridos = []
     eventos_ocorridos = []
 
