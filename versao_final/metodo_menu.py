@@ -1,5 +1,5 @@
-import crud_usuarios as usuario
-import crud_eventos as evento
+import DAO_usuarios as usuario
+import DAO_eventos as evento
 import database
 import os
 
