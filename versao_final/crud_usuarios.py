@@ -12,7 +12,7 @@ def criar_usuario_simples(nome, email, cpf, data_nascimento, login, senha):
     try:
         # Verificar se o CPF tem 11 dígitos e contém apenas números
         if not (re.match(r"^\d{11}$", cpf) and cpf.isnumeric()):
-            raise ValueError("CPF inválido. Deve conter 9 dígitos e ser composto apenas por números.")
+            raise ValueError("CPF inválido. Deve conter 11 dígitos e ser composto apenas por números.")
 
         # Verificar se o login já existe no banco de dados
         database.cursor.execute('SELECT COUNT(*) FROM usuario_simples WHERE login = ?', (login,))
